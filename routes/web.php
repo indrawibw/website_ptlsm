@@ -17,12 +17,14 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// User publik bisa kirim kerjasama tanpa login
 Route::post('/kerjasama-store', [App\Http\Controllers\KerjasamaController::class, 'store'])->name('kerjasama.store');
 
-Route::resource('kerjasama', App\Http\Controllers\KerjasamaController::class)
-    ->middleware('auth');
-
-Route::get('/kerjasama-export-pdf', [App\Http\Controllers\KerjasamaController::class, 'exportPdf'])->middleware(['auth'])->name('kerjasama.export-pdf');
+// Admin harus login untuk CRUD
+Route::middleware('auth')->group(function () {
+    Route::resource('kerjasama', App\Http\Controllers\KerjasamaController::class)->except(['store']);
+    Route::get('/kerjasama-export-pdf', [App\Http\Controllers\KerjasamaController::class, 'exportPdf'])->name('kerjasama.export-pdf');
+});
 
 
 require __DIR__.'/auth.php';
